@@ -9,6 +9,7 @@ const Cart = (props) => {
   const [showChekout, setShowCheckout] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [didSubmit, setDidSubmit] = useState(false);
+  const [httpError, setHttpError] = useState(null);
   const cartCtx = useContext(CartContext);
   const totalAmount = `$ ${cartCtx.totalAmount.toFixed(2)}`;
   const cartItemRemoveHandler = (id) => {
@@ -19,16 +20,25 @@ const Cart = (props) => {
   };
   const submitOrderHandler = async (userData) => {
     setIsSubmitting(true);
-    await fetch('https://food-order-app-7db68-default-rtdb.europe-west1.firebasedatabase.app/orders.json', {
-      method: 'POST',
-      body: JSON.stringify({
-        user: userData,
-        orderItems: cartCtx.items
+    try {
+      const response = await fetch('https://food-order-app-7db68-default-rtdb.europe-west1.firebasedatabase.app/orders.json', {
+        method: 'POST',
+        body: JSON.stringify({
+          user: userData,
+          orderItems: cartCtx.items
+        })
       })
-    })
-    setIsSubmitting(false);
-    setDidSubmit(true);
-    cartCtx.clearCart()
+      if (!response.ok) {
+        throw new Error("Something went wrong!!");
+      }
+      setIsSubmitting(false);
+      setDidSubmit(true);
+      cartCtx.clearCart()
+    } catch (error) {
+      setIsSubmitting(false);
+      setHttpError(error.message);
+    }
+
   }
 
   const cartItems = cartCtx.items.map((item) => (
@@ -68,7 +78,15 @@ const Cart = (props) => {
     {!showChekout && modalButtons}
   </Fragment>
   const isSubmittingContent = <p>Sending data to database...</p>
-  const didSubmitContent = <Fragment><p>DATA SUCCESSFUYLLY SENT TO DATABASE</p>
+  const didSubmitContent = <Fragment><p>DATA SUCCESSFULLY SENT TO DATABASE</p>
+    <div className={classes.actions}>
+      <button className={classes.button} onClick={props.onCloseCart}>
+        Close
+      </button>
+    </div>
+  </Fragment>
+  const error = <Fragment>
+    <p>{httpError}</p>
     <div className={classes.actions}>
       <button className={classes.button} onClick={props.onCloseCart}>
         Close
@@ -77,9 +95,12 @@ const Cart = (props) => {
   </Fragment>
   return (
     <Modal onCloseCart={props.onCloseCart}>
-      {!isSubmitting && !didSubmit && cartModalContent}
-      {isSubmitting && isSubmittingContent}
+      {!isSubmitting && httpError && error}
       {!isSubmitting && didSubmit && didSubmitContent}
+      {!isSubmitting && !didSubmit && !httpError && cartModalContent}
+      {isSubmitting && isSubmittingContent}
+
+
     </Modal>
   );
 };
