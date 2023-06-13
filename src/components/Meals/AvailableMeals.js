@@ -13,7 +13,7 @@ const AvailableMeals = () => {
         "https://food-order-app-7db68-default-rtdb.europe-west1.firebasedatabase.app/Meals.json"
       );
       if (!response.ok) {
-        throw new Error("Something went wrong!");
+        throw new Error("Something went wrong!!");
       }
       console.log(response);
       const responseData = await response.json();

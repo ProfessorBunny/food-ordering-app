@@ -15,6 +15,16 @@ const Cart = (props) => {
   const cartItemAddHandler = (item) => {
     cartCtx.addItem({ ...item, amount: 1 });
   };
+  const submitOrderHandler = (userData) => {
+    fetch('https://food-order-app-7db68-default-rtdb.europe-west1.firebasedatabase.app/orders.json', {
+      method: 'POST',
+      body: JSON.stringify({
+        user: userData,
+        orderItems: cartCtx.items
+      })
+    })
+  }
+
   const cartItems = cartCtx.items.map((item) => (
     <CartItem
       key={item.id}
@@ -49,7 +59,7 @@ const Cart = (props) => {
         <span>Total Amount</span>
         <span>{totalAmount}</span>
       </div>
-      {showChekout && <Checkout onCancel={props.onCloseCart} />}
+      {showChekout && <Checkout onSubmit={submitOrderHandler} onCancel={props.onCloseCart} />}
       {!showChekout && modalButtons}
     </Modal>
   );

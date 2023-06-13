@@ -44,20 +44,24 @@ const Checkout = (props) => {
     if (!formIsValid) {
       return;
     }
+
+    props.onSubmit({
+      name: enteredName,
+      street: enteredStreet,
+      post: enteredPost,
+      city: enteredCity
+
+    })
   };
 
-  const nameControlClasses = `${classes.control} ${
-    !formInputValidity.name ? classes.invalid : ""
-  } `;
-  const streetControlClasses = `${classes.control} ${
-    !formInputValidity.street ? classes.invalid : ""
-  }`;
-  const postControlClasses = `${classes.control} ${
-    !formInputValidity.post ? classes.invalid : ""
-  } `;
-  const cityContolClasses = `${classes.control} ${
-    !formInputValidity.city ? classes.invalid : ""
-  } `;
+  const nameControlClasses = `${classes.control} ${!formInputValidity.name ? classes.invalid : ""
+    } `;
+  const streetControlClasses = `${classes.control} ${!formInputValidity.street ? classes.invalid : ""
+    }`;
+  const postControlClasses = `${classes.control} ${!formInputValidity.post ? classes.invalid : ""
+    } `;
+  const cityContolClasses = `${classes.control} ${!formInputValidity.city ? classes.invalid : ""
+    } `;
 
   return (
     <form className={classes.form} onSubmit={confirmHandler}>
